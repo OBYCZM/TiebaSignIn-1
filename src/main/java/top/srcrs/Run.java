@@ -204,31 +204,25 @@ public class Run {
      * @author srcrs
      * @Time 2020-10-31
      */
-    public void send(String sckey) {
+public void send(String sckey) {
+    
     String title = "贴吧签到: 成功 " + success.size() + " 失败 " + (followNum - success.size());
-    String desp = "### 运行结果\n\n" +
-                  "* **共计**: " + followNum + " 个贴吧\n" +
-                  "* **成功**: " + success.size() + "\n" +
-                  "* **失败**: " + (followNum - success.size());
+    String desp = "共计: " + followNum + "\n成功: " + success.size() + "\n失败: " + (followNum - success.size());
 
     try {
         String url = "https://sctapi.ftqq.com/" + sckey + ".send";
-        
         HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("title", title));
-        params.add(new BasicNameValuePair("desp", desp));
-        httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-
+        String body = "title=" + java.net.URLEncoder.encode(title, "UTF-8") +
+                      "&desp=" + java.net.URLEncoder.encode(desp, "UTF-8");
+        StringEntity entityBody = new StringEntity(body, "UTF-8");
+        httpPost.setEntity(entityBody);
         HttpResponse resp = client.execute(httpPost);
-        String respContent = EntityUtils.toString(resp.getEntity(), "UTF-8");
-        
-        LOGGER.info("Server酱推送响应: " + respContent);
+        String respContent = org.apache.http.util.EntityUtils.toString(resp.getEntity(), "UTF-8");
+        System.out.println("Server酱响应: " + respContent);
     } catch (Exception e) {
-        LOGGER.error("Server酱发送失败 -- " + e);
+        e.printStackTrace();
     }
 }
 
